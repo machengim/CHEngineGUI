@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="1080" maxWidth="1920" minHeight="480" minWidth="640" prefHeight="600" prefWidth="800.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PrimaryController">
+   <children>
+      <HBox alignment="CENTER" prefHeight="150.0" prefWidth="800.0">
+         <children>
+            <Label fx:id="title" alignment="CENTER" contentDisplay="CENTER" text="CHEngine Blog Generator" />
+         </children></HBox>
+      <StackPane alignment="TOP_LEFT" prefHeight="400.0" prefWidth="800.0">
+         <children>
+                  <VBox fx:id="stack0" alignment="CENTER" prefHeight="400.0" prefWidth="800.0" visible="false">
+                     <children>
+                         <Button fx:id="btn_0_create" onAction="#handleBtn0Create" styleClass="blue_button" text="Create a new blog">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Button>
+                         <Button fx:id="btn_0_modify" onAction="#handleBtn0Modify" styleClass="blue_button" text="Modify blog info">
+                     <VBox.margin>
+                        <Insets top="30.0" />
+                     </VBox.margin></Button>
+                         <Button fx:id="btn_0_manage" onAction="#handleBtn0Manage" styleClass="blue_button" text="Manage posts">
+                     <VBox.margin>
+                        <Insets top="30.0" />
+                     </VBox.margin></Button>
+                  <Button fx:id="btn_0_quit" layoutX="280.0" layoutY="228.0" onAction="#handleBtn0Quit" styleClass="blue_button" text="Quit">
+                     <VBox.margin>
+                        <Insets top="30.0" />
+                     </VBox.margin>
+                  </Button>
+                     </children>
+                  </VBox>
+                 <VBox fx:id="stack1" alignment="CENTER" prefHeight="400.0" prefWidth="800.0" visible="false">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="600.0">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="100.0" right="100.0" top="5.0" />
+                     </VBox.margin>
+                     <children>
+                        <Label text="Site name:">
+                           <padding>
+                              <Insets right="30.0" />
+                           </padding>
+                        </Label>
+                        <TextField fx:id="text_1_name" prefWidth="200.0" />
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="110.0" layoutY="168.0" prefHeight="100.0" prefWidth="600.0">
+                     <children>
+                        <Label text="Site url:     ">
+                           <padding>
+                              <Insets right="30.0" />
+                           </padding>
+                        </Label>
+                        <TextField fx:id="text_1_url" prefWidth="200.0" />
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="100.0" right="100.0" top="5.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="110.0" layoutY="240.0" prefHeight="100.0" prefWidth="600.0">
+                     <children>
+                        <Label text="Local path:">
+                           <padding>
+                              <Insets bottom="5.0" right="30.0" top="5.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets bottom="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="text_1_path" prefWidth="300.0" />
+                        <Label text="        " />
+                        <Button fx:id="btn_1_choose" mnemonicParsing="false" onAction="#handleBtn1Choose" text="..." />
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="100.0" right="100.0" top="5.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="btn_1_back" layoutX="33.0" layoutY="77.0" mnemonicParsing="false" onAction="#handleBtn1Back" text="Back" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" />
+                        <Button fx:id="btn_1_next" layoutX="369.0" layoutY="122.0" mnemonicParsing="false" onAction="#handleBtn1Next" text="Next" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+                </VBox>
+            <VBox fx:id="stack2" prefHeight="400.0" prefWidth="800.0" visible="false">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="600.0">
+                     <VBox.margin>
+                        <Insets left="100.0" right="100.0" />
+                     </VBox.margin>
+                     <children>
+                        <Label text="Please choose a theme:" />
+                        <Label text="      " />
+                        <ChoiceBox fx:id="choice_2_theme" prefWidth="150.0" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="300.0" prefWidth="800.0">
+                     <children>
+                        <ImageView fx:id="img_2_theme" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true"/>
+
+                     </children>
+                  </HBox>
+                  <AnchorPane prefHeight="50.0" prefWidth="800.0">
+                     <children>
+                        <Button fx:id="btn_2_back" layoutX="50.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleBtn2Back" text="Back" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" />
+                        <Button fx:id="btn_2_done" layoutX="700.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleBtn2Done" text="Create now!" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="350.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+               <StackPane.margin>
+                  <Insets />
+               </StackPane.margin>
+            </VBox>
+            <VBox fx:id="stack3" prefHeight="400.0" prefWidth="800.0" visible="false">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0">
+                     <children>
+                        <Label text="Location of your blog:">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="text_3_path" prefHeight="30.0" prefWidth="300.0">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button fx:id="btn_3_choose" mnemonicParsing="false" prefHeight="10.0" prefWidth="40.0" text="...">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <Pane fx:id="pane3" prefHeight="350.0" prefWidth="740.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="20.0" prefHeight="40.0" prefWidth="350.0">
+                           <children>
+                              <Label text="Site name:">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="text_3_name" prefHeight="30.0" prefWidth="200.0">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="40.0" prefWidth="350.0">
+                           <children>
+                              <Label text="Site url:">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="text_3_url" prefHeight="30.0" prefWidth="200.0">
+                                 <HBox.margin>
+                                    <Insets left="40.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="120.0" prefHeight="40.0" prefWidth="350.0">
+                           <children>
+                              <Label text="Theme:">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <ChoiceBox fx:id="choice_3_theme" prefHeight="20.0" prefWidth="150.0">
+                                 <HBox.margin>
+                                    <Insets left="40.0" />
+                                 </HBox.margin>
+                              </ChoiceBox>
+                           </children>
+                        </HBox>
+                        <ImageView fx:id="img_3_theme" fitHeight="300.0" fitWidth="300.0" layoutX="430.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true"/>
+                        <Button fx:id="btn_3_back" layoutX="26.0" layoutY="279.0" mnemonicParsing="false" onAction="#handleBtn3Back" text="Back" />
+                        <Button fx:id="btn_3_submit" layoutX="175.0" layoutY="279.0" mnemonicParsing="false" text="Modify now" />
+                        <Separator layoutX="15.0" layoutY="5.0" prefHeight="3.0" prefWidth="750.0" />
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+            <VBox fx:id="stack4" prefHeight="400.0" prefWidth="800.0" visible="false">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0">
+                     <children>
+                        <Label text="Location of your blog:">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="text_4_path" prefHeight="30.0" prefWidth="300.0">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button fx:id="btn_4_choose" mnemonicParsing="false" prefHeight="10.0" prefWidth="40.0" text="...">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <Pane fx:id="pane4" prefHeight="350.0" prefWidth="740.0">
+                     <children>
+                        <Button fx:id="btn_4_back" layoutX="26.0" layoutY="279.0" mnemonicParsing="false" onAction="#handleBtn4Back" text="Back" />
+                        <Separator layoutX="15.0" layoutY="5.0" prefHeight="3.0" prefWidth="750.0" />
+                        <VBox layoutX="270.0" layoutY="60.0" prefHeight="200.0" prefWidth="240.0">
+                           <children>
+                              <Button fx:id="btn_4_new_draft" mnemonicParsing="false" styleClass="blue_button" text="Generate new draft">
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin></Button>
+                              <Button fx:id="btn_4_check" mnemonicParsing="false" styleClass="blue_button" text="Check modification">
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin></Button>
+                              <Button fx:id="btn_4_whole_site" mnemonicParsing="false" styleClass="blue_button" text="Create whole site">
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin></Button>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+      <HBox alignment="BOTTOM_RIGHT" prefHeight="50.0" prefWidth="800.0">
+         <children>
+            <Label fx:id="foot" text="http://macheng.im" />
+         </children>
+      </HBox>
+   </children>
+</VBox>
