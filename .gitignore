@@ -1,6 +1,6 @@
 out/
+temp/
 Test*
 .idea/
 *.class
 *.ser
-*.zip

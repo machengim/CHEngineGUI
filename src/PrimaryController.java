@@ -6,6 +6,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
@@ -19,21 +20,22 @@ public class PrimaryController {
     @FXML
     private VBox stack0, stack1, stack2, stack3, stack4;
     @FXML
-    private Button btn_1_choose;
+    private Button btn_1_choose, btn_3_choose, btn_4_choose;
     @FXML
-    private TextField text_1_path, text_1_name, text_1_url;
+    private TextField text_1_path, text_1_name, text_1_url, text_3_path, text_3_name, text_3_url, text_4_path;
     @FXML
     private ChoiceBox choice_2_theme, choice_3_theme;
     @FXML
     private ImageView img_2_theme, img_3_theme;
+    @FXML
+    private Pane pane3, pane4;
 
     private  VBox[] stackList;
-    private int flag_new;
+    private Site site;
 
     @FXML
     public void initialize()
     {
-        flag_new = 0;
         stackList = new VBox[]{stack0, stack1, stack2, stack3, stack4};
         activeStack(0);
         activeImageView(choice_2_theme, img_2_theme);
@@ -47,11 +49,17 @@ public class PrimaryController {
 
     public void handleBtn0Modify(ActionEvent e)
     {
+        text_3_path.setText("");
+        text_3_name.setText("");
+        text_3_url.setText("");
+        pane3.setVisible(false);
         activeStack(3);
     }
 
     public void handleBtn0Manage(ActionEvent e)
     {
+        text_4_path.setText("");
+        pane4.setVisible(false);
         activeStack(4);
     }
 
@@ -62,14 +70,12 @@ public class PrimaryController {
 
     public void handleBtn2Back(ActionEvent e)
     {
-        if (flag_new == 0)
-            activeStack(1);
-        else
             activeStack(0);
     }
 
     public void handleBtn3Back(ActionEvent e)
     {
+        pane3.setVisible(false);
         activeStack(0);
     }
 
@@ -81,12 +87,13 @@ public class PrimaryController {
 
     public void handleBtn1Next(ActionEvent e) {
         if (validateBtn1Next())
+        {
+            site = new Site(text_1_name.getText(), text_1_url.getText(), text_1_path.getText());
             activeStack(2);
+        }
         else
         {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Information incomplete!");
-            alert.show();
+            alertShow("Information incomplete!", 1);
         }
     }
 
@@ -101,15 +108,126 @@ public class PrimaryController {
 
     public void handleBtn2Done(ActionEvent e)
     {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText("Congrats! You have created a blog!");
-        alert.show();
-        flag_new = 1;
+        String themeName = choice_2_theme.getValue().toString();
+        Theme theme = changeTheme(themeName);
+        site.setTheme(theme);
+        site.saveSite();
+        alertShow("Congrats! You have created a blog!", 0);
+        stack2.setVisible(false);
+        stack0.setVisible(true);
+    }
+
+    public void handleBtn3Choose(ActionEvent e)
+    {
+        if (!validateDataFile(btn_3_choose, text_3_path))
+            return;
+        text_3_name.setText(site.getSiteName());
+        text_3_url.setText(site.getSiteUrl());
+        choice_3_theme.setValue(site.getTheme().getThemeName());
+        pane3.setVisible(true);
+    }
+
+    public void handleBtn4Choose(ActionEvent e)
+    {
+        if (!validateDataFile(btn_4_choose, text_4_path))
+            return;
+        pane4.setVisible(true);
+    }
+
+    public void handleBtn3Submit()
+    {
+        if (!text_3_name.getText().equals(site.getSiteName()))
+            site.setSiteName(text_3_name.getText());
+        if (!text_3_url.getText().equals(site.getSiteUrl()))
+            site.setSiteUrl(text_3_url.getText());
+        if (!choice_3_theme.getValue().toString().equals(site.getTheme().getThemeName()))
+        {
+            String newThemeName = choice_3_theme.getValue().toString();
+            Theme theme = changeTheme(newThemeName);
+            site.setTheme(theme);
+        }
+        site.saveSite();
+        alertShow("You have modified the site info!", 0);
+    }
+
+    public void handleBtn4NewDraft()
+    {
+        String draftFile = site.generateDraft();
+        site.saveSite();
+        alertShow("New draft was saved as " + draftFile, 0);
+    }
+
+    public void handleBtn4Check()
+    {
+
+    }
+
+    public void handleBtn4WholeSite()
+    {
+        site.generateWholeSite();
     }
 
     public void handleBtn0Quit(ActionEvent e)
     {
         System.exit(0);
+    }
+
+    private void activeImageView(ChoiceBox cb, ImageView iv)
+    {
+        cb.getItems().addAll("theme01", "theme02");
+        cb.setValue("theme01");
+        Path prevfile = Paths.get("themes", "theme01.png");
+        Image prevPic = new Image(getClass().getResourceAsStream(prevfile.toString()));
+        iv.setImage(prevPic);
+        cb.getSelectionModel().selectedItemProperty().addListener((v, oldv, newv) -> {
+            Path filename = Paths.get("themes", newv + ".png");
+            Image newPic = new Image(getClass().getResourceAsStream(filename.toString()));
+            iv.setImage(newPic);
+        });
+    }
+
+    private boolean validateBtn1Next()
+    {
+        if (text_1_path.getLength() == 0 || text_1_name.getLength() == 0 || text_1_url.getLength() == 0)
+            return false;
+        return true;
+    }
+
+    private boolean validateDataFile(Button btn, TextField text)
+    {
+        Window window = btn.getScene().getWindow();
+        DirectoryChooser dc = new DirectoryChooser();
+        File select = dc.showDialog(window);
+        if (select == null)
+            return false;
+        text.setText(select.toString());
+        String dataFile = select.toString() + File.separator + "save.ser";
+        if (!FileIO.isDir(select.toString()))
+        {
+            alertShow("Not a directory!", 1);
+            return false;
+        }
+        else if (!FileIO.isFile(dataFile))
+        {
+            alertShow("Data file does not exist!", 1);
+            return false;
+        }
+        //not complete here.
+        site = Site.loadSite(dataFile);
+        return true;
+    }
+
+    private Theme changeTheme(String newThemeName)
+    {
+        String sep = File.separator;
+        ClassLoader cl = getClass().getClassLoader();
+        File srcZipFile = new File(cl.getResource("themes" + sep + newThemeName + ".zip").getFile());
+        String destThemePath = site.getSitePath() + sep + "themes" + sep + newThemeName;
+        FileIO.unzip(srcZipFile, destThemePath);
+        Theme theme = new Theme(newThemeName);
+        String jsonFile = site.getSitePath() + sep + "themes" + sep + newThemeName + sep + "config.json";
+        theme.readFromJson(jsonFile);
+        return theme;
     }
 
     private void activeStack(int pos)
@@ -123,25 +241,21 @@ public class PrimaryController {
         }
     }
 
-    private void activeImageView(ChoiceBox cb, ImageView iv)
+    private void alertShow(String msg, int type)
     {
-        cb.getItems().addAll("theme01", "theme02");
-        cb.setValue("theme01");
-        Path prevfile = Paths.get("images", "theme01.png");
-        Image prevPic = new Image(getClass().getResourceAsStream(prevfile.toString()));
-        iv.setImage(prevPic);
-        cb.getSelectionModel().selectedItemProperty().addListener((v, oldv, newv) -> {
-            Path filename = Paths.get("images", newv + ".png");
-            Image newPic = new Image(getClass().getResourceAsStream(filename.toString()));
-            iv.setImage(newPic);
-        });
+        Alert alert;
+        switch (type)
+        {
+            case 1:
+                alert = new Alert(Alert.AlertType.ERROR);   break;
+            case 2:
+                alert = new Alert(Alert.AlertType.CONFIRMATION);    break;
+            default:
+                alert = new Alert(Alert.AlertType.INFORMATION);
+        }
+        alert.setHeaderText(msg);
+        alert.showAndWait();
     }
 
-    private boolean validateBtn1Next()
-    {
-        if (text_1_path.getLength() == 0 || text_1_name.getLength() == 0 || text_1_url.getLength() == 0)
-            return false;
-        return true;
-    }
 
 }

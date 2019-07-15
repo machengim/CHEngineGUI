@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -120,7 +119,7 @@
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="300.0" prefWidth="800.0">
                      <children>
-                        <ImageView fx:id="img_2_theme" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true"/>
+                        <ImageView fx:id="img_2_theme" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
 
                      </children>
                   </HBox>
@@ -149,14 +148,14 @@
                               <Insets left="20.0" />
                            </HBox.margin>
                         </TextField>
-                        <Button fx:id="btn_3_choose" mnemonicParsing="false" prefHeight="10.0" prefWidth="40.0" text="...">
+                        <Button fx:id="btn_3_choose" mnemonicParsing="false" onAction="#handleBtn3Choose" prefHeight="10.0" prefWidth="40.0" text="...">
                            <HBox.margin>
                               <Insets left="20.0" />
                            </HBox.margin>
                         </Button>
                      </children>
                   </HBox>
-                  <Pane fx:id="pane3" prefHeight="350.0" prefWidth="740.0">
+                  <Pane fx:id="pane3" prefHeight="300.0" prefWidth="740.0">
                      <children>
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="20.0" prefHeight="40.0" prefWidth="350.0">
                            <children>
@@ -200,15 +199,22 @@
                               </ChoiceBox>
                            </children>
                         </HBox>
-                        <ImageView fx:id="img_3_theme" fitHeight="300.0" fitWidth="300.0" layoutX="430.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true"/>
-                        <Button fx:id="btn_3_back" layoutX="26.0" layoutY="279.0" mnemonicParsing="false" onAction="#handleBtn3Back" text="Back" />
-                        <Button fx:id="btn_3_submit" layoutX="175.0" layoutY="279.0" mnemonicParsing="false" text="Modify now" />
+                        <ImageView fx:id="img_3_theme" fitHeight="260.0" fitWidth="260.0" layoutX="480.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
+                        <Button fx:id="btn_3_submit" layoutX="175.0" layoutY="250.0" mnemonicParsing="false" onAction="#handleBtn3Submit" text="Modify now" />
                         <Separator layoutX="15.0" layoutY="5.0" prefHeight="3.0" prefWidth="750.0" />
                      </children>
                   </Pane>
+                  <Pane prefHeight="40.0" prefWidth="800.0">
+                     <children>
+                        <Button fx:id="btn_3_back" layoutX="20.0" layoutY="5.0" mnemonicParsing="false" onAction="#handleBtn3Back" text="Back" />
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Pane>
                </children>
             </VBox>
-            <VBox fx:id="stack4" prefHeight="400.0" prefWidth="800.0" visible="false">
+            <VBox fx:id="stack4" prefHeight="400.0" prefWidth="800.0">
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0">
                      <children>
@@ -222,20 +228,19 @@
                               <Insets left="20.0" />
                            </HBox.margin>
                         </TextField>
-                        <Button fx:id="btn_4_choose" mnemonicParsing="false" prefHeight="10.0" prefWidth="40.0" text="...">
+                        <Button fx:id="btn_4_choose" onAction="#handleBtn4Choose" mnemonicParsing="false" prefHeight="10.0" prefWidth="40.0" text="...">
                            <HBox.margin>
                               <Insets left="20.0" />
                            </HBox.margin>
                         </Button>
                      </children>
                   </HBox>
-                  <Pane fx:id="pane4" prefHeight="350.0" prefWidth="740.0">
+                  <Pane fx:id="pane4" prefHeight="290.0" prefWidth="800.0">
                      <children>
-                        <Button fx:id="btn_4_back" layoutX="26.0" layoutY="279.0" mnemonicParsing="false" onAction="#handleBtn4Back" text="Back" />
                         <Separator layoutX="15.0" layoutY="5.0" prefHeight="3.0" prefWidth="750.0" />
                         <VBox layoutX="270.0" layoutY="60.0" prefHeight="200.0" prefWidth="240.0">
                            <children>
-                              <Button fx:id="btn_4_new_draft" mnemonicParsing="false" styleClass="blue_button" text="Generate new draft">
+                              <Button fx:id="btn_4_new_draft" onAction="#handleBtn4NewDraft" mnemonicParsing="false" styleClass="blue_button" text="Generate new draft">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin></Button>
@@ -243,12 +248,17 @@
                                  <VBox.margin>
                                     <Insets top="20.0" />
                                  </VBox.margin></Button>
-                              <Button fx:id="btn_4_whole_site" mnemonicParsing="false" styleClass="blue_button" text="Create whole site">
+                              <Button fx:id="btn_4_whole_site" onAction="#handleBtn4WholeSite" mnemonicParsing="false" styleClass="blue_button" text="Create whole site">
                                  <VBox.margin>
                                     <Insets top="20.0" />
                                  </VBox.margin></Button>
                            </children>
                         </VBox>
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="50.0" prefWidth="800.0">
+                     <children>
+                        <Button fx:id="btn_4_back" layoutX="20.0" layoutY="5.0" mnemonicParsing="false" onAction="#handleBtn4Back" text="Back" />
                      </children>
                   </Pane>
                </children>
@@ -257,7 +267,7 @@
       </StackPane>
       <HBox alignment="BOTTOM_RIGHT" prefHeight="50.0" prefWidth="800.0">
          <children>
-            <Label fx:id="foot" text="http://macheng.im" />
+            <Label fx:id="foot" text="http://machengim.github.io" />
          </children>
       </HBox>
    </children>
