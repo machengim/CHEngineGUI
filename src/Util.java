@@ -1,3 +1,7 @@
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -61,6 +65,19 @@ public class Util {
             e.printStackTrace();
         }
         return i;
+    }
+
+    public static void openUrl(String url) {
+        if(Desktop.isDesktopSupported())
+        {
+            try {
+                Desktop.getDesktop().browse(new URI("http://www.google.com"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (URISyntaxException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 
 }

@@ -1,8 +1,10 @@
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class FileIO
@@ -66,7 +68,7 @@ public class FileIO
         try(Scanner sc = new Scanner(new File(filename)))
         {
             while (sc.hasNextLine())
-                sb.append(sc.nextLine());
+                sb.append(sc.nextLine() + '\n');
         }
         catch (FileNotFoundException e)
         {
@@ -139,35 +141,38 @@ public class FileIO
 
     public static void unzip(File zipFilePath, String destDir)
     {
-        File dir = new File(destDir);
-        // create output directory if it doesn't exist
-        if(!dir.exists()) dir.mkdirs();
-        FileInputStream fis;
-        //buffer for read and write data to file
-        byte[] buffer = new byte[1024];
-        try {
-            fis = new FileInputStream(zipFilePath);
-            ZipInputStream zis = new ZipInputStream(fis);
-            ZipEntry ze = zis.getNextEntry();
-            while(ze != null){
-                String fileName = ze.getName();
-                File newFile = new File(destDir + File.separator + fileName);
-                //create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
+        try
+        {
+            ZipFile zipFile = new ZipFile(zipFilePath);
+            Enumeration<?> enu = zipFile.entries();
+            while (enu.hasMoreElements())
+            {
+                ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+                String name = destDir + File.separator + zipEntry.getName();
+                File file = new File(name);
+                if (name.endsWith("/"))
+                {
+                    file.mkdirs();
+                    continue;
                 }
+                File parent = file.getParentFile();
+                if (parent != null)
+                {
+                    parent.mkdirs();
+                }
+                // Extract the file
+                InputStream is = zipFile.getInputStream(zipEntry);
+                FileOutputStream fos = new FileOutputStream(file);
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = is.read(bytes)) >= 0)
+                {
+                    fos.write(bytes, 0, length);
+                }
+                is.close();
                 fos.close();
-                //close this ZipEntry
-                zis.closeEntry();
-                ze = zis.getNextEntry();
             }
-            //close last ZipEntry
-            zis.closeEntry();
-            zis.close();
-            fis.close();
+            zipFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

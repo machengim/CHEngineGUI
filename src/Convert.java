@@ -11,7 +11,8 @@ public class Convert
 
     public static String[] readMeta(LinkedList<StringBuilder> mdLines)
     {
-        String[] metas = new String[6];
+        String[] metas = new String[8];
+        metas[7] = "n";
         int flag = 0;
         Iterator it = mdLines.iterator();
         while (flag < 2 && it.hasNext())
@@ -34,6 +35,10 @@ public class Convert
                 metas[4] = s;
             else if (line.indexOf("url") >= 0)
                 metas[5] = s;
+            else if (line.indexOf("author") >= 0)
+                metas[6] = s;
+            else if (line.indexOf("page") >= 0)
+                metas[7] = "y";
         }
         return metas;
     }
@@ -262,7 +267,18 @@ public class Convert
     public static String getBrief(String text, int limit)
     {
         limit = (text.length() > limit)? limit: text.length();
-        return text.substring(0, limit);
+        String brief = text.substring(0, limit);
+        int i, j;
+        if ((i = brief.indexOf("<!")) >= 0)
+            return brief.substring(0, i);
+        else
+        {
+            i = brief.lastIndexOf("<");
+            j = brief.lastIndexOf(">");
+            if (i != -1 && i > j)
+                brief = brief.substring(0, i);
+            return brief + "...";
+        }
     }
 
     private static int timesAtHead(StringBuilder sb, char c)

@@ -24,6 +24,13 @@
 
 }
 
+.view_button{
+    -fx-background-color: #a7657f;
+    -fx-font-size: 16px;
+    -fx-text-fill: #e5fcf5;
+    -fx-background-radius: 5,5,4;
+}
+
 #title{
     -fx-font-family: "Chilanka", "arial";
     -fx-font-size: 36px;

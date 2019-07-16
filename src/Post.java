@@ -1,7 +1,6 @@
-import java.io.File;
 import java.io.Serializable;
 
-public class Post implements Serializable {
+public class Post implements Serializable, Comparable<Post> {
 
     public static final long serialVersionUID = 9527L;
     private int id;
@@ -18,11 +17,11 @@ public class Post implements Serializable {
     public Post(){}
 
 
-    public Post(int id, String title, String cat, String[] tags, String date, String url, String mtime) {
+    public Post(int id, String title, String cat, String[] tags, String date, String url, String mtime, String author) {
         this.id = id;
-        this.title = title;
-        this.author = "";
-        this.cat = cat;
+        this.title = (title == null || title.length() == 0)? "No title" : title;
+        this.author = (author == null || author.length() == 0)? "Cheng": author;
+        this.cat = (cat == null || cat.length() == 0)? "" : cat;
         this.date = date;
         this.mtime = mtime;
         this.url = url;
@@ -109,9 +108,8 @@ public class Post implements Serializable {
         this.content = content;
     }
 
-    //wait for theme class.
-    public void generateHtmlFile(Site site)
-    {
-        String htmlFile = site.getSitePath() + File.separator + Site.POST_PATH + File.separator + url;
+    @Override
+    public int compareTo(Post o) {
+        return this.date.compareTo(o.date);
     }
 }

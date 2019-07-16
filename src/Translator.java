@@ -21,12 +21,32 @@ public class Translator
         arrTable.put("navigations", site.getTheme().getNavigations());
         arrTable.put("links", site.getTheme().getLinks());
         arrTable.put("contacts", site.getTheme().getContacts());
+        HashMap<String, String> cats = new HashMap<>();
+        for (String cat: site.getCats())
+            cats.put(cat, Site.ARCHIVE_PATH + File.separator + cat + ".html");
+        arrTable.put("cats", cats);
         index_limit = site.getTheme().getPostsOnIndex();
         recents_limit = site.getTheme().getRecentPostSize();
         posts = site.getPosts();
     }
 
-    public String tranlate(String text, int op)
+    public void setPostInfo(Post post) {
+        varTable.put("post_content", post.getContent());
+        varTable.put("post_title", post.getTitle());
+        varTable.put("post_date", Util.formatDate(post.getDate()));
+        varTable.put("post_author", post.getAuthor());
+        varTable.put("post_url", post.getUrl());
+    }
+
+    public void setPageInfo(Page page)
+    {
+        varTable.put("post_content", page.getContent());
+        varTable.put("post_title", page.getTitle());
+        varTable.put("post_url", page.getUrl());
+        varTable.put("post_date", Util.formatDate(page.getDate()));
+    }
+
+    public String tranlate(String text, int op, String cat)
     {
         StringBuilder sb = new StringBuilder();
         int i = -1, j = 0;
@@ -37,7 +57,7 @@ public class Translator
             if (text.substring(i, j).contains("for"))
             {
                 j = text.indexOf("[$endfor$]", j);
-                sb.append(handleLoop(text.substring(i, j + 10), op));
+                sb.append(handleLoop(text.substring(i, j + 10), op, cat));
                 j = i = j + 10;
             }
             else
@@ -58,7 +78,7 @@ public class Translator
         return getRealUrl(varTable.get(varName), op);
     }
 
-    private String handleLoop(String text, int op)
+    private String handleLoop(String text, int op, String cat)
     {
         StringBuilder sb = new StringBuilder();
         int i = text.indexOf(':');
@@ -67,8 +87,8 @@ public class Translator
         i = j + 2;
         j = text.lastIndexOf("[$endfor$]");
         String trimedText = text.substring(i, j);
-        if (arrName.equals("posts") || arrName.equals("recents"))
-            replacePostLoop(trimedText, arrName, op);   //note that loop is in the child function.
+        if (arrName.equals("posts") || arrName.equals("recents") || arrName.equals("archives"))
+            sb.append(replacePostLoop(trimedText, arrName, op, cat));   //note that loop is in the child function.
         else
             arrTable.get(arrName).forEach((key, value) -> sb.append(replaceLoop(key, value, trimedText, op)));
         return sb.toString();
@@ -92,11 +112,13 @@ public class Translator
         return sb.toString();
     }
 
-    private String replacePostLoop(String text, String option, int op)
+    private String replacePostLoop(String text, String option, int op, String cat)
     {
         StringBuilder sb = new StringBuilder();
         int limit;
-        if (option.equals("posts"))
+        if (option.equals("archives"))
+            limit = 100;
+        else if (option.equals("posts"))
             limit = index_limit;
         else
             limit = recents_limit;
@@ -104,6 +126,8 @@ public class Translator
         {
             StringBuilder temp = new StringBuilder(text);
             Post post = posts.get(t);
+            if (op == 2 && cat != null && post.getCat() != null && ! post.getCat().equals(cat))
+                continue;
             int i, j;
             while ((i = temp.indexOf("[$")) >= 0)
             {
@@ -114,7 +138,7 @@ public class Translator
                 else if (varName.contains("post_title"))
                     temp.replace(i, j + 2, post.getTitle());
                 else if (varName.contains("post_date"))
-                    temp.replace(i, j + 2, post.getDate());
+                    temp.replace(i, j + 2, Util.formatDate(post.getDate()));
                 else if (varName.contains("post_author"))
                     temp.replace(i, j + 2, post.getAuthor());
                 else if (varName.contains("post_brief"))
@@ -131,9 +155,9 @@ public class Translator
     {
         if (url == null)
             return "";
-        if (op == 1 || url.contains("http") || url.contains(":/")  || url.startsWith("www"))
+        if (op == 1 || url.contains("http") || url.contains(":/")  || url.startsWith("www") || url.contains("@") || url.contains(".com") || url.contains(".net") || url.contains(".im"))
             return url;
-        else if (url.contains(".") || url.contains("themes"))
+        else if (url.endsWith(".htm") || url.endsWith(".html") || url.contains("themes") || url.endsWith(".jpg") || url.endsWith(".png"))
             return "../" + url;
         return url;
     }
