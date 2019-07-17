@@ -85,6 +85,9 @@ public class Theme  implements Serializable {
 
     public void readFromJson(String jsonFile)
     {
+        navigations.clear();
+        contacts.clear();
+        links.clear();
         System.out.println("now reading from " + jsonFile);
         try{
             String config = FileIO.readFile(jsonFile);

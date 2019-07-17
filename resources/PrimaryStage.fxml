@@ -134,7 +134,7 @@
                   <Insets />
                </StackPane.margin>
             </VBox>
-            <VBox fx:id="stack3" prefHeight="400.0" prefWidth="800.0">
+            <VBox fx:id="stack3" prefHeight="400.0" prefWidth="800.0" visible="false">
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0">
                      <children>
@@ -219,7 +219,7 @@
                   </Pane>
                </children>
             </VBox>
-            <VBox fx:id="stack4" prefHeight="400.0" prefWidth="800.0" visible="false">
+            <VBox fx:id="stack4" prefHeight="400.0" prefWidth="800.0">
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0">
                      <children>
@@ -245,7 +245,7 @@
                         </Button>
                      </children>
                   </HBox>
-                  <Pane fx:id="pane4" prefHeight="290.0" prefWidth="800.0">
+                  <Pane fx:id="pane4" prefHeight="290.0" prefWidth="800.0" visible="false">
                      <children>
                         <Separator layoutX="15.0" layoutY="5.0" prefHeight="3.0" prefWidth="750.0" />
                         <VBox layoutX="260.0" layoutY="25.0" prefHeight="260.0" prefWidth="260.0">
@@ -259,11 +259,11 @@
                                     <Insets top="30.0" />
                                  </VBox.margin>
                               </Button>
-                              <Button fx:id="btn_4_check" mnemonicParsing="false" onAction="#handleBtn4Check" styleClass="blue_button" text="Check modification">
+                              <Button fx:id="btn_4_check" mnemonicParsing="false" onAction="#handleBtn4Check" styleClass="blue_button" text="Check modifications">
                                  <VBox.margin>
                                     <Insets top="30.0" />
                                  </VBox.margin></Button>
-                              <Button fx:id="btn_4_whole_site" mnemonicParsing="false" onAction="#handleBtn4WholeSite" styleClass="blue_button" text="Generate everything">
+                              <Button fx:id="btn_4_whole_site" mnemonicParsing="false" onAction="#handleBtn4WholeSite" styleClass="blue_button" text="Create all contents">
                                  <VBox.margin>
                                     <Insets top="30.0" />
                                  </VBox.margin></Button>
@@ -282,7 +282,7 @@
       </StackPane>
       <HBox alignment="BOTTOM_RIGHT" prefHeight="50.0" prefWidth="800.0">
          <children>
-            <Label fx:id="foot" text="http://machengim.github.io" />
+            <Label fx:id="foot" text="ver 0.1  " />
          </children>
       </HBox>
    </children>
