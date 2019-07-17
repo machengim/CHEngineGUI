@@ -160,9 +160,9 @@ public class Site implements Serializable {
         String pagePath = sitePath + File.separator + PAGE_PATH;
         if (!FileIO.isDir(pagePath))
             FileIO.mkDir(pagePath);
-        FileIO.emptyDir(postPath);
-        FileIO.emptyDir(archivePath);
-        FileIO.emptyDir(pagePath);
+        FileIO.clearDir(postPath);
+        FileIO.clearDir(archivePath);
+        FileIO.clearDir(pagePath);
         Translator translator = new Translator(this);
         String outputFile;
         for (Post post:posts)
