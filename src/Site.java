@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.TreeMap;
 
 public class Site implements Serializable {
     private String siteName;
@@ -176,7 +177,84 @@ public class Site implements Serializable {
             generatHtml(translator, "generic", outputFile, null);
             page.setMtime(Util.getNow());
         }
-        outputFile = archivePath + File.separator + "index.html";
+        generateCommonFiles();
+        saveSite();
+    }
+
+    public void checkPostModification()
+    {
+        String[] draftList = FileIO.getFiles(sitePath + File.separator + DRAFT_PATH);
+        TreeMap<Integer, String> draftMap = new TreeMap<>();
+        for (String draft: draftList)
+        {
+            if (!draft.contains(".md"))
+                continue;
+            String draftFile = sitePath + File.separator + DRAFT_PATH + File.separator + draft;
+            LinkedList<StringBuilder> mdLines = FileIO.readMdFile(draftFile);
+            String[] metas = Convert.readMeta(mdLines);
+            if (metas[7].contains("y"))
+                continue;
+            int draftID = Util.StrToInt(metas[0]);
+            draftMap.put(draftID, draftFile);
+        }
+        TreeMap<Integer, Post> postMap = new TreeMap<>();
+        for (Post post: posts)
+            postMap.put(post.getId(), post);
+        int flag = 0;
+        while (draftMap.size() > 0 && postMap.size() > 0)
+        {
+            int i = draftMap.firstKey(), j = postMap.firstKey();
+            if (i > j)
+            {
+                posts.remove(postMap.get(j));
+                postMap.remove(j);
+                flag = 1;
+                continue;
+            }
+            else if (i < j)
+            {
+                newPost(draftMap.get(i));
+                draftMap.remove(i);
+                flag = 1;
+                continue;
+            }
+            else if (FileIO.getMtime(draftMap.get(i)).compareTo(postMap.get(j).getMtime()) > 0)
+            {
+                posts.remove(postMap.get(j));
+                flag = 1;
+                newPost(draftMap.get(i));
+            }
+            postMap.remove(j);
+            draftMap.remove(i);
+        }
+        while (draftMap.size() > 0)
+        {
+            int i = draftMap.firstKey();
+            newPost(draftMap.get(i));
+            draftMap.remove(i);
+            flag = 1;
+        }
+        while (postMap.size() > 0)
+        {
+            int i = postMap.firstKey();
+            posts.remove(postMap.get(i));
+            postMap.remove(i);
+            flag = 1;
+        }
+
+        if (flag == 1)      //signal some changes taken place.
+        {
+            generateCommonFiles();
+            saveSite();
+        }
+    }
+
+    public void generateCommonFiles()
+    {
+        Collections.sort(posts, Collections.reverseOrder());
+        String archivePath = sitePath + File.separator + ARCHIVE_PATH;
+        Translator translator = new Translator(this);
+        String outputFile = archivePath + File.separator + "index.html";
         generatHtml(translator, "archive", outputFile, null);
         for (String cat: cats)
         {
@@ -185,13 +263,20 @@ public class Site implements Serializable {
         }
         outputFile = sitePath + File.separator + "index.html";
         generatHtml(translator, "index", outputFile, null);
-        System.out.println("cats have:" + cats.size());
-        for (String s: cats)
-            System.out.println("name: " + s);
-        saveSite();
     }
 
-    private void generatHtml(Translator ts, String template, String outputFile, String cat) //option: generic
+    private void newPost(String draftFile)
+    {
+        LinkedList<StringBuilder> mdLines = FileIO.readMdFile(draftFile);
+        String[] metas = Convert.readMeta(mdLines);
+        Post post = getPost(mdLines, metas);
+        Translator ts = new Translator(this);
+        ts.setPostInfo(post);
+        String outputFile = sitePath + File.separator + post.getUrl();
+        generatHtml(ts, "generic", outputFile, null);
+    }
+
+    private void generatHtml(Translator ts, String template, String outputFile, String cat) //option cat is only used for category's archive page.
     {
         int op = (template.equals("index")) ? 1 : 0;
         if (cat != null)
@@ -202,12 +287,12 @@ public class Site implements Serializable {
         FileIO.writeFile(outputFile, outputText);
     }
 
-    private void getPost(LinkedList<StringBuilder> mdLines, String[] metas)
+    private Post getPost(LinkedList<StringBuilder> mdLines, String[] metas)
     {
         //meta[]: 0 id, 1 title, 2 cat, 3 tags, 4 date, 5 url, 6, author, 7, is page.
         int postID = Util.StrToInt(metas[0]);
         if (postID == -1)
-            return;
+            return null;
         else if (postID >= nextID)
             nextID = postID + 1;
         String[] tags = null;
@@ -223,7 +308,7 @@ public class Site implements Serializable {
         String postBrief = Convert.getBrief(postContent, 256);
         post.setBrief(postBrief);
         post.setContent(postContent);
-        System.out.println("title = " + metas[1] + ", cat =" + metas[2]);
+        return post;
     }
 
     private void getPage(LinkedList<StringBuilder> mdLines, String[] metas)

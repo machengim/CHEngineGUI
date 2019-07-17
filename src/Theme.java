@@ -85,6 +85,7 @@ public class Theme  implements Serializable {
 
     public void readFromJson(String jsonFile)
     {
+        System.out.println("now reading from " + jsonFile);
         try{
             String config = FileIO.readFile(jsonFile);
             JSONObject jo = new JSONObject(config);

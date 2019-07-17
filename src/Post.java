@@ -20,7 +20,7 @@ public class Post implements Serializable, Comparable<Post> {
     public Post(int id, String title, String cat, String[] tags, String date, String url, String mtime, String author) {
         this.id = id;
         this.title = (title == null || title.length() == 0)? "No title" : title;
-        this.author = (author == null || author.length() == 0)? "Cheng": author;
+        this.author = (author == null || author.length() == 0)? "Anonymous": author;
         this.cat = (cat == null || cat.length() == 0)? "" : cat;
         this.date = date;
         this.mtime = mtime;

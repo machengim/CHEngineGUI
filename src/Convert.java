@@ -182,15 +182,16 @@ public class Convert
         if (flag_code == 0)
         {
             flag_code = 1;
-            sb.insert(0, "<pre><code>");
+            sb.insert(0, "<pre>");
         }
         if (flag_code == 1 && timesAtTail(sb, '\n') >= 2)
         {
-            sb.insert(sb.length() - count, "</code></pre>");
+            sb.insert(sb.length() - count, "</pre>");
             flag_code = 0;
         }
+        /*
         while (count-- > 1)
-            sb.deleteCharAt(sb.length() - 1);
+            sb.deleteCharAt(sb.length() - 1); */
     }
 
     private static void getQuote(StringBuilder sb)

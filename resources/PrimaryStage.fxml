@@ -31,7 +31,7 @@
                      <VBox.margin>
                         <Insets top="30.0" />
                      </VBox.margin></Button>
-                         <Button fx:id="btn_0_manage" onAction="#handleBtn0Manage" styleClass="blue_button" text="Manage posts">
+                         <Button fx:id="btn_0_manage" onAction="#handleBtn0Manage" styleClass="blue_button" text="Manage contents">
                      <VBox.margin>
                         <Insets top="30.0" />
                      </VBox.margin></Button>
@@ -153,6 +153,11 @@
                               <Insets left="20.0" />
                            </HBox.margin>
                         </Button>
+                        <Button fx:id="btn_3_view" mnemonicParsing="false" onAction="#handleBtn3View" styleClass="view_button" text="View in browser">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </Button>
                      </children>
                   </HBox>
                   <Pane fx:id="pane3" prefHeight="300.0" prefWidth="740.0">
@@ -233,27 +238,32 @@
                               <Insets left="20.0" />
                            </HBox.margin>
                         </Button>
+                        <Button fx:id="btn_4_view" mnemonicParsing="false" onAction="#handleBtn4View" styleClass="view_button" text="View in browser">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </Button>
                      </children>
                   </HBox>
                   <Pane fx:id="pane4" prefHeight="290.0" prefWidth="800.0">
                      <children>
                         <Separator layoutX="15.0" layoutY="5.0" prefHeight="3.0" prefWidth="750.0" />
-                        <VBox layoutX="270.0" layoutY="30.0" prefHeight="260.0" prefWidth="240.0">
+                        <VBox layoutX="260.0" layoutY="25.0" prefHeight="260.0" prefWidth="260.0">
                            <children>
-                              <Button fx:id="btn_4_new_draft" mnemonicParsing="false" onAction="#handleBtn4NewDraft" styleClass="blue_button" text="Generate new draft">
+                              <Button fx:id="btn_4_new_draft" mnemonicParsing="false" onAction="#handleBtn4NewDraft" styleClass="blue_button" text="New post draft">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin></Button>
-                              <Button fx:id="btn_4_new_page" layoutX="10.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleBtn4NewPage" styleClass="blue_button" text="Generate new page">
+                              <Button fx:id="btn_4_new_page" layoutX="10.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleBtn4NewPage" styleClass="blue_button" text="New page draft">
                                  <VBox.margin>
                                     <Insets top="30.0" />
                                  </VBox.margin>
                               </Button>
-                              <Button fx:id="btn_4_check" mnemonicParsing="false" styleClass="blue_button" text="Check modification">
+                              <Button fx:id="btn_4_check" mnemonicParsing="false" onAction="#handleBtn4Check" styleClass="blue_button" text="Check modification">
                                  <VBox.margin>
                                     <Insets top="30.0" />
                                  </VBox.margin></Button>
-                              <Button fx:id="btn_4_whole_site" mnemonicParsing="false" onAction="#handleBtn4WholeSite" styleClass="blue_button" text="Create whole site">
+                              <Button fx:id="btn_4_whole_site" mnemonicParsing="false" onAction="#handleBtn4WholeSite" styleClass="blue_button" text="Generate everything">
                                  <VBox.margin>
                                     <Insets top="30.0" />
                                  </VBox.margin></Button>

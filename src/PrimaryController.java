@@ -1,3 +1,4 @@
+import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -29,6 +30,7 @@ public class PrimaryController {
 
     private  VBox[] stackList;
     private Site site;
+    private HostServices hostServices;
 
     @FXML
     public void initialize()
@@ -37,6 +39,10 @@ public class PrimaryController {
         activeStack(0);
         activeImageView(choice_2_theme, img_2_theme);
         activeImageView(choice_3_theme, img_3_theme);
+    }
+
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
     }
 
     public void handleBtn0Create(ActionEvent e)
@@ -108,6 +114,7 @@ public class PrimaryController {
         String themeName = choice_2_theme.getValue().toString();
         Theme theme = changeTheme(themeName);
         site.setTheme(theme);
+        site.generateCommonFiles();
         site.saveSite();
         alertShow("Congrats! You have created a blog!", 0);
         stack2.setVisible(false);
@@ -143,27 +150,28 @@ public class PrimaryController {
             Theme theme = changeTheme(newThemeName);
             site.setTheme(theme);
         }
-        site.saveSite();
-        alertShow("You have modified the site info!", 0);
+        site.generateWholeSite();
+        alertShow("Site info modified and all contents re-generated!", 0);
     }
 
     public void handleBtn4NewDraft()
     {
         String draftFile = site.generateDraft(0);
         site.saveSite();
-        alertShow("New post draft was saved as " + draftFile, 0);
+        alertShow("New post draft was saved at : " + draftFile, 0);
     }
 
     public void handleBtn4NewPage()
     {
         String draftFile = site.generateDraft(1);
         site.saveSite();
-        alertShow("New page draft was saved as " + draftFile, 0);
+        alertShow("New page draft was saved at : " + draftFile, 0);
     }
 
     public void handleBtn4Check()
     {
-
+        site.checkPostModification();
+        alertShow("Modification check complete!", 0);
     }
 
     public void handleBtn4WholeSite()
@@ -171,6 +179,33 @@ public class PrimaryController {
         site.generateWholeSite();
         alertShow("Site has been generated!", 0);
     }
+
+    public void handleBtn4View()
+    {
+        openLink(text_4_path);
+    }
+
+    public void handleBtn3View()
+    {
+        openLink(text_3_path);
+    }
+
+    private void openLink(TextField text_path)
+    {
+        if (text_path.getText() == null || text_path.getText().length() == 0)
+        {
+            alertShow("Please choose the directory of your blog!", 1);
+            return;
+        }
+        String index = text_path.getText() + File.separator + "index.html";
+        if (!FileIO.isFile(index))
+        {
+            alertShow("index.html not found!", 1);
+            return;
+        }
+        hostServices.showDocument(index);
+    }
+
 
     public void handleBtn0Quit(ActionEvent e)
     {
