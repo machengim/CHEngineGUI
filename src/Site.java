@@ -276,7 +276,7 @@ public class Site implements Serializable {
         String[] paths = {draftPath, postPath, archivePath, pagePath};
         for (String path: paths) {
             if (FileIO.isDir(path))
-                FileIO.emptyDir(path);
+                FileIO.clearDir(path);
             else
                 FileIO.mkDir(path);
         }
