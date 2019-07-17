@@ -33,6 +33,7 @@ public class Site implements Serializable {
         posts = new LinkedList<>();
         pages = new LinkedList<>();
         cats = new LinkedList<>();
+        initializeDirectories();
     }
 
     public Site(String siteName, String siteUrl, String sitePath, Theme theme) {
@@ -44,6 +45,7 @@ public class Site implements Serializable {
         posts = new LinkedList<>();
         pages = new LinkedList<>();
         cats = new LinkedList<>();
+        initializeDirectories();
     }
 
 
@@ -263,6 +265,21 @@ public class Site implements Serializable {
         }
         outputFile = sitePath + File.separator + "index.html";
         generatHtml(translator, "index", outputFile, null);
+    }
+
+    private void initializeDirectories()
+    {
+        String draftPath = sitePath + File.separator + DRAFT_PATH;
+        String postPath = sitePath + File.separator + POST_PATH;
+        String archivePath = sitePath + File.separator + ARCHIVE_PATH;
+        String pagePath = sitePath + File.separator + PAGE_PATH;
+        String[] paths = {draftPath, postPath, archivePath, pagePath};
+        for (String path: paths) {
+            if (FileIO.isDir(path))
+                FileIO.emptyDir(path);
+            else
+                FileIO.mkDir(path);
+        }
     }
 
     private void newPost(String draftFile)
