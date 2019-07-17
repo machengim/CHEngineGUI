@@ -151,18 +151,7 @@ public class Site implements Serializable {
                 getPost(mdLines, metas);
         }
         Collections.sort(posts, Collections.reverseOrder());
-        String postPath = sitePath + File.separator + POST_PATH;
-        if (!FileIO.isDir(postPath))
-            FileIO.mkDir(postPath);
-        String archivePath = sitePath + File.separator + ARCHIVE_PATH;
-        if (!FileIO.isDir(archivePath))
-            FileIO.mkDir(archivePath);
-        String pagePath = sitePath + File.separator + PAGE_PATH;
-        if (!FileIO.isDir(pagePath))
-            FileIO.mkDir(pagePath);
-        FileIO.clearDir(postPath);
-        FileIO.clearDir(archivePath);
-        FileIO.clearDir(pagePath);
+        initializeDirectories();
         Translator translator = new Translator(this);
         String outputFile;
         for (Post post:posts)
@@ -269,11 +258,10 @@ public class Site implements Serializable {
 
     private void initializeDirectories()
     {
-        String draftPath = sitePath + File.separator + DRAFT_PATH;
         String postPath = sitePath + File.separator + POST_PATH;
         String archivePath = sitePath + File.separator + ARCHIVE_PATH;
         String pagePath = sitePath + File.separator + PAGE_PATH;
-        String[] paths = {draftPath, postPath, archivePath, pagePath};
+        String[] paths = { postPath, archivePath, pagePath};
         for (String path: paths) {
             if (FileIO.isDir(path))
                 FileIO.clearDir(path);
