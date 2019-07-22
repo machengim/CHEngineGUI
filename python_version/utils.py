@@ -94,7 +94,7 @@ def save_site(dict, path):
 
 
 def split_md_content(text):
-    parts = text.split('---')
+    parts = text.split('---', 2)
     meta_lines = parts[1].split('\n')
     metas = {}
     metas['is_page'] = 'n'
@@ -102,7 +102,7 @@ def split_md_content(text):
     for line in meta_lines:
         if line.count(':') == 0:
             continue
-        tag = line.split(':')
+        tag = line.split(':', 1)
         if tag[0] in parameters and len(tag[1]) > 0:
             metas[tag[0]] = tag[1].strip()
     return metas, parts[2]
