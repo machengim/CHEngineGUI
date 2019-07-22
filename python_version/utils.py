@@ -98,21 +98,13 @@ def split_md_content(text):
     meta_lines = parts[1].split('\n')
     metas = {}
     metas['is_page'] = 'n'
+    parameters = ['id', 'title', 'author', 'cat', 'date', 'url', 'is_page']
     for line in meta_lines:
-        if line.count('id') > 0:
-            metas['id'] = line[line.index(':') + 1:].strip()
-        elif line.count('title') > 0:
-            metas['title'] = line[line.index(':') + 1:].strip()
-        elif line.count('author') > 0:
-            metas['author'] = line[line.index(':') + 1:].strip()
-        elif line.count('date') > 0:
-            metas['date'] = line[line.index(':') + 1:].strip()
-        elif line.count('url') > 0:
-            metas['url'] = line[line.index(':') + 1:].strip()
-        elif line.count('cat') > 0:
-            metas['cat'] = line[line.index(':') + 1:].strip()
-        elif line.count('is_page') > 0:
-            metas['is_page'] = line[line.index(':') + 1: ].strip()
+        if line.count(':') == 0:
+            continue
+        tag = line.split(':')
+        if tag[0] in parameters and len(tag[1]) > 0:
+            metas[tag[0]] = tag[1].strip()
     return metas, parts[2]
 
 
