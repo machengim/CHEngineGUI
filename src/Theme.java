@@ -85,6 +85,11 @@ public class Theme  implements Serializable {
 
     public void readFromJson(String jsonFile)
     {
+        if (!FileIO.isFile(jsonFile))
+        {
+            System.out.println("Json file not found!");
+            return;
+        }
         navigations.clear();
         contacts.clear();
         links.clear();

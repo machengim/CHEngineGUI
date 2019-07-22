@@ -50,13 +50,9 @@ public class PrimaryController {
         activeStack(1);
     }
 
-    public void handleBtn0Modify(ActionEvent e)
+    public void handleBtn0Quit(ActionEvent e)
     {
-        text_3_path.setText("");
-        text_3_name.setText("");
-        text_3_url.setText("");
-        pane3.setVisible(false);
-        activeStack(3);
+        System.exit(0);
     }
 
     public void handleBtn0Manage(ActionEvent e)
@@ -66,27 +62,28 @@ public class PrimaryController {
         activeStack(4);
     }
 
+    public void handleBtn0Modify(ActionEvent e)
+    {
+        text_3_path.setText("");
+        text_3_name.setText("");
+        text_3_url.setText("");
+        pane3.setVisible(false);
+        activeStack(3);
+    }
+
     public void handleBtn1Back(ActionEvent e)
     {
         activeStack(0);
     }
 
-    public void handleBtn2Back(ActionEvent e)
+    public void handleBtn1Choose(ActionEvent e)
     {
-            activeStack(0);
+        Window window = btn_1_choose.getScene().getWindow();
+        DirectoryChooser dc = new DirectoryChooser();
+        File select = dc.showDialog(window);
+        if (select != null)
+            text_1_path.setText(select.toString());
     }
-
-    public void handleBtn3Back(ActionEvent e)
-    {
-        pane3.setVisible(false);
-        activeStack(0);
-    }
-
-    public void handleBtn4Back(ActionEvent e)
-    {
-        activeStack(0);
-    }
-
 
     public void handleBtn1Next(ActionEvent e) {
         if (validateBtn1Next())
@@ -100,13 +97,9 @@ public class PrimaryController {
         }
     }
 
-    public void handleBtn1Choose(ActionEvent e)
+    public void handleBtn2Back(ActionEvent e)
     {
-        Window window = btn_1_choose.getScene().getWindow();
-        DirectoryChooser dc = new DirectoryChooser();
-        File select = dc.showDialog(window);
-        if (select != null)
-            text_1_path.setText(select.toString());
+            activeStack(0);
     }
 
     public void handleBtn2Done(ActionEvent e)
@@ -121,6 +114,12 @@ public class PrimaryController {
         stack0.setVisible(true);
     }
 
+    public void handleBtn3Back(ActionEvent e)
+    {
+        pane3.setVisible(false);
+        activeStack(0);
+    }
+
     public void handleBtn3Choose(ActionEvent e)
     {
         if (!validateDataFile(btn_3_choose, text_3_path))
@@ -129,13 +128,6 @@ public class PrimaryController {
         text_3_url.setText(site.getSiteUrl());
         choice_3_theme.setValue(site.getTheme().getThemeName());
         pane3.setVisible(true);
-    }
-
-    public void handleBtn4Choose(ActionEvent e)
-    {
-        if (!validateDataFile(btn_4_choose, text_4_path))
-            return;
-        pane4.setVisible(true);
     }
 
     public void handleBtn3Submit()
@@ -154,6 +146,29 @@ public class PrimaryController {
         alertShow("Site info modified and all contents re-generated!", 0);
     }
 
+    public void handleBtn3View()
+    {
+        openLink(text_3_path);
+    }
+
+    public void handleBtn4Back(ActionEvent e)
+    {
+        activeStack(0);
+    }
+
+    public void handleBtn4Check()
+    {
+        site.checkPostModification();
+        alertShow("Modification check complete!", 0);
+    }
+
+    public void handleBtn4Choose(ActionEvent e)
+    {
+        if (!validateDataFile(btn_4_choose, text_4_path))
+            return;
+        pane4.setVisible(true);
+    }
+
     public void handleBtn4NewDraft()
     {
         String draftFile = site.generateDraft(0);
@@ -168,10 +183,9 @@ public class PrimaryController {
         alertShow("New page draft was saved at : " + draftFile, 0);
     }
 
-    public void handleBtn4Check()
+    public void handleBtn4View()
     {
-        site.checkPostModification();
-        alertShow("Modification check complete!", 0);
+        openLink(text_4_path);
     }
 
     public void handleBtn4WholeSite()
@@ -180,14 +194,58 @@ public class PrimaryController {
         alertShow("Site has been generated!", 0);
     }
 
-    public void handleBtn4View()
+    private void activeStack(int pos)
     {
-        openLink(text_4_path);
+        for(int i = 0; i < stackList.length; i++)
+        {
+            if (i == pos)
+                stackList[i].setVisible(true);
+            else
+                stackList[i].setVisible(false);
+        }
     }
 
-    public void handleBtn3View()
+    private void activeImageView(ChoiceBox cb, ImageView iv)
     {
-        openLink(text_3_path);
+        cb.getItems().addAll("theme01", "theme02", "theme03");
+        cb.setValue("theme01");
+        Path prevfile = Paths.get("themes", "theme01.png");
+        Image prevPic = new Image(getClass().getResourceAsStream(prevfile.toString()));
+        iv.setImage(prevPic);
+        cb.getSelectionModel().selectedItemProperty().addListener((v, oldv, newv) -> {
+            Path filename = Paths.get("themes", newv + ".png");
+            Image newPic = new Image(getClass().getResourceAsStream(filename.toString()));
+            iv.setImage(newPic);
+        });
+    }
+
+    private void alertShow(String msg, int type)
+    {
+        Alert alert;
+        switch (type)
+        {
+            case 1:
+                alert = new Alert(Alert.AlertType.ERROR);   break;
+            case 2:
+                alert = new Alert(Alert.AlertType.CONFIRMATION);    break;
+            default:
+                alert = new Alert(Alert.AlertType.INFORMATION);
+        }
+        alert.setHeaderText(msg);
+        alert.showAndWait();
+    }
+
+    private Theme changeTheme(String newThemeName)
+    {
+        String sep = File.separator;
+        ClassLoader cl = getClass().getClassLoader();
+        File srcZipFile = new File(cl.getResource("themes" + sep + newThemeName + ".zip").getFile());
+        String destThemePath = site.getSitePath() + sep + "themes";
+        FileIO.unzip(srcZipFile, destThemePath);
+        Theme theme = new Theme(newThemeName);
+        String jsonFile = site.getSitePath() + sep + "themes" + sep + newThemeName + sep + "config.json";
+        theme.readFromJson(jsonFile);
+        return theme;
     }
 
     private void openLink(TextField text_path)
@@ -204,26 +262,6 @@ public class PrimaryController {
             return;
         }
         hostServices.showDocument(index);
-    }
-
-
-    public void handleBtn0Quit(ActionEvent e)
-    {
-        System.exit(0);
-    }
-
-    private void activeImageView(ChoiceBox cb, ImageView iv)
-    {
-        cb.getItems().addAll("theme01", "theme02");
-        cb.setValue("theme01");
-        Path prevfile = Paths.get("themes", "theme01.png");
-        Image prevPic = new Image(getClass().getResourceAsStream(prevfile.toString()));
-        iv.setImage(prevPic);
-        cb.getSelectionModel().selectedItemProperty().addListener((v, oldv, newv) -> {
-            Path filename = Paths.get("themes", newv + ".png");
-            Image newPic = new Image(getClass().getResourceAsStream(filename.toString()));
-            iv.setImage(newPic);
-        });
     }
 
     private boolean validateBtn1Next()
@@ -256,46 +294,4 @@ public class PrimaryController {
         site = Site.loadSite(dataFile);
         return true;
     }
-
-    private Theme changeTheme(String newThemeName)
-    {
-        String sep = File.separator;
-        ClassLoader cl = getClass().getClassLoader();
-        File srcZipFile = new File(cl.getResource("themes" + sep + newThemeName + ".zip").getFile());
-        String destThemePath = site.getSitePath() + sep + "themes";
-        FileIO.unzip(srcZipFile, destThemePath);
-        Theme theme = new Theme(newThemeName);
-        String jsonFile = site.getSitePath() + sep + "themes" + sep + newThemeName + sep + "config.json";
-        theme.readFromJson(jsonFile);
-        return theme;
-    }
-
-    private void activeStack(int pos)
-    {
-        for(int i = 0; i < stackList.length; i++)
-        {
-            if (i == pos)
-                stackList[i].setVisible(true);
-            else
-                stackList[i].setVisible(false);
-        }
-    }
-
-    private void alertShow(String msg, int type)
-    {
-        Alert alert;
-        switch (type)
-        {
-            case 1:
-                alert = new Alert(Alert.AlertType.ERROR);   break;
-            case 2:
-                alert = new Alert(Alert.AlertType.CONFIRMATION);    break;
-            default:
-                alert = new Alert(Alert.AlertType.INFORMATION);
-        }
-        alert.setHeaderText(msg);
-        alert.showAndWait();
-    }
-
-
 }

@@ -115,7 +115,7 @@ public class Convert
     {
         int count = timesAtTail(sb, '\n');
         if (sb.indexOf("<li>") >= 0)
-            count--;
+            return;
         sb.delete(sb.length() - count, sb.length());
         if (count == 1)
             sb.append("</br>");
@@ -123,6 +123,23 @@ public class Convert
         {
             sb.insert(0, "<p>");
             sb.insert(sb.length(), "</p>");
+        }
+    }
+
+    public static String getBrief(String text, int limit)
+    {
+        limit = (text.length() > limit)? limit: text.length();
+        String brief = text.substring(0, limit);
+        int i, j;
+        if ((i = brief.indexOf("<!")) >= 0)
+            return brief.substring(0, i);
+        else
+        {
+            i = brief.lastIndexOf("<");
+            j = brief.lastIndexOf(">");
+            if (i != -1 && i > j)
+                brief = brief.substring(0, i);
+            return brief + "...";
         }
     }
 
@@ -168,6 +185,7 @@ public class Convert
         sb.deleteCharAt(0);
         sb.insert(0, "<li>");
         sb.insert(sb.length() - count, "</li>");
+       // sb.deleteCharAt(sb.length() - 1);
     }
 
     private static void getPre(StringBuilder sb)
@@ -207,7 +225,7 @@ public class Convert
             sb.insert(sb.length() - 2, "</blockquote>");
             flag_quote = 0;
         }
-        sb.deleteCharAt(sb.length() - 1);
+    //    sb.deleteCharAt(sb.length() - 1);
     }
 
     private static void getStrong(StringBuilder sb)
@@ -264,23 +282,6 @@ public class Convert
         return true;
     }
 
-    //need modification, only one display limit applies.
-    public static String getBrief(String text, int limit)
-    {
-        limit = (text.length() > limit)? limit: text.length();
-        String brief = text.substring(0, limit);
-        int i, j;
-        if ((i = brief.indexOf("<!")) >= 0)
-            return brief.substring(0, i);
-        else
-        {
-            i = brief.lastIndexOf("<");
-            j = brief.lastIndexOf(">");
-            if (i != -1 && i > j)
-                brief = brief.substring(0, i);
-            return brief + "...";
-        }
-    }
 
     private static int timesAtHead(StringBuilder sb, char c)
     {

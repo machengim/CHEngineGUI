@@ -36,6 +36,7 @@ public class Translator
         varTable.put("post_date", Util.formatDate(post.getDate()));
         varTable.put("post_author", post.getAuthor());
         varTable.put("post_url", post.getUrl());
+        varTable.put("post_cat", post.getCat());
     }
 
     public void setPageInfo(Page page)
@@ -46,28 +47,15 @@ public class Translator
         varTable.put("post_date", Util.formatDate(page.getDate()));
     }
 
-    public String tranlate(String text, int op, String cat)
+    private String getRealUrl(String url, int op)
     {
-        StringBuilder sb = new StringBuilder();
-        int i = -1, j = 0;
-        while ((i = text.indexOf("[$", i)) >= 0)
-        {
-            sb.append(text.substring(j, i));
-            j = text.indexOf("$]", i);
-            if (text.substring(i, j).contains("for"))
-            {
-                j = text.indexOf("[$endfor$]", j);
-                sb.append(handleLoop(text.substring(i, j + 10), op, cat));
-                j = i = j + 10;
-            }
-            else
-            {
-                sb.append(getVarible(text.substring(i, j + 2), op));
-                j = i = j + 2;
-            }
-        }
-        sb.append(text.substring(j));
-        return sb.toString();
+        if (url == null)
+            return "";
+        if (op == 1 || url.contains("http") || url.contains(":/")  || url.startsWith("www") || url.contains("@") || url.contains(".com") || url.contains(".net") || url.contains(".im"))
+            return url;
+        else if (url.endsWith(".htm") || url.endsWith(".html") || url.contains("themes") || url.endsWith(".jpg") || url.endsWith(".png"))
+            return "../" + url;
+        return url;
     }
 
     private String getVarible(String text, int op)
@@ -151,15 +139,29 @@ public class Translator
         return sb.toString();
     }
 
-    private String getRealUrl(String url, int op)
+
+    public String tranlate(String text, int op, String cat)
     {
-        if (url == null)
-            return "";
-        if (op == 1 || url.contains("http") || url.contains(":/")  || url.startsWith("www") || url.contains("@") || url.contains(".com") || url.contains(".net") || url.contains(".im"))
-            return url;
-        else if (url.endsWith(".htm") || url.endsWith(".html") || url.contains("themes") || url.endsWith(".jpg") || url.endsWith(".png"))
-            return "../" + url;
-        return url;
+        StringBuilder sb = new StringBuilder();
+        int i = -1, j = 0;
+        while ((i = text.indexOf("[$", i)) >= 0)
+        {
+            sb.append(text.substring(j, i));
+            j = text.indexOf("$]", i);
+            if (text.substring(i, j).contains("for"))
+            {
+                j = text.indexOf("[$endfor$]", j);
+                sb.append(handleLoop(text.substring(i, j + 10), op, cat));
+                j = i = j + 10;
+            }
+            else
+            {
+                sb.append(getVarible(text.substring(i, j + 2), op));
+                j = i = j + 2;
+            }
+        }
+        sb.append(text.substring(j));
+        return sb.toString();
     }
 
 }

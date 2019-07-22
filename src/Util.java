@@ -1,7 +1,3 @@
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -9,28 +5,15 @@ public class Util {
 
     public Util(){}
 
-    public static int getCat(String s)
+    public static String formatDate(String s)
     {
-        if (s.length() == 0)
-            return 1;
-        int read = 1;
-        try
-        {
-            read = Integer.parseInt(s);
-        }
-        catch (NumberFormatException e)
-        {
-            e.printStackTrace();
-        }
-        int cat = (read == 2)? 2: 1;
-        return cat;
-    }
-
-    public static String getToday()
-    {
-        Date dt = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
-        return df.format(dt);
+        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                "Oct", "Nov", "Dec"};
+        int mm = Integer.parseInt(s.substring(4, 6));
+        int dd = Integer.parseInt(s.substring(6));
+        String month = months[mm - 1];
+        String date = month + " " + dd + ", " + s.substring(0, 4);
+        return date;
     }
 
     public static String getNow()
@@ -40,20 +23,11 @@ public class Util {
         return df.format(dt);
     }
 
-    public static String formatDate(String s)
+    public static String getToday()
     {
-        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-                            "Oct", "Nov", "Dec"};
-        int mm = Integer.parseInt(s.substring(4, 6));
-        int dd = Integer.parseInt(s.substring(6));
-        String month = months[mm - 1];
-        String date = month + " " + dd + ", " + s.substring(0, 4);
-        return date;
-    }
-
-    public static String simpleDate(String s)
-    {
-        return s.substring(0,4) + "-" + s.substring(4, 6) + "-" + s.substring(6);
+        Date dt = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+        return df.format(dt);
     }
 
     public static int StrToInt(String s)
@@ -65,19 +39,6 @@ public class Util {
             e.printStackTrace();
         }
         return i;
-    }
-
-    public static void openUrl(String url) {
-        if(Desktop.isDesktopSupported())
-        {
-            try {
-                Desktop.getDesktop().browse(new URI("http://www.google.com"));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (URISyntaxException e1) {
-                e1.printStackTrace();
-            }
-        }
     }
 
 }

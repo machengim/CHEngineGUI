@@ -105,73 +105,6 @@ public class Site implements Serializable {
         this.cats = cats;
     }
 
-
-
-    public String generateDraft(int type)
-    {
-        String draftPath = sitePath + File.separator + DRAFT_PATH;
-        if (!FileIO.isDir(draftPath))
-            FileIO.mkDir(draftPath);
-        String newDraftContent = "---\n!Important: DO NOT modify the ID number! Lines with * are mandatory.";
-        String draftFile;
-        if (type == 0)
-        {   newDraftContent = newDraftContent + "Use ',' to split tags.\n*id: " + nextID
-                    + "\ntitle: \nauthor: Cheng\ncat: \ntags: \n*date: " + Util.getToday()
-                    + "\n*url: " + nextID + ".html\n---\n\n";
-            draftFile = draftPath + File.separator + nextID + ".md";
-            nextID++;
-        }
-        else {
-            newDraftContent = newDraftContent + "\n*id:" + nextPageID + "\ntitle: \ndate: " + Util.getToday()
-                    + "\n*url: p" + nextPageID + ".html\n*type: page\n---\n\n";
-            draftFile = draftPath + File.separator + "p" + nextPageID + ".md";
-            nextPageID++;
-        }
-        FileIO.writeFile(draftFile, newDraftContent);
-        return draftFile;
-    }
-
-    public void generateWholeSite()
-    {
-        posts.clear();
-        cats.clear();
-        String jsonFile = getSitePath() + File.separator+ "themes" + File.separator + theme.getThemeName() + File.separator + "config.json";
-        theme.readFromJson(jsonFile);
-        String draftPath = sitePath + File.separator + DRAFT_PATH;
-        String[] draftList = FileIO.getFiles(draftPath);
-        for (String draftFile: draftList)
-        {
-            if (!draftFile.contains(".md"))
-                continue;
-            LinkedList<StringBuilder> mdLines = FileIO.readMdFile(draftPath + File.separator + draftFile);
-            String[] metas = Convert.readMeta(mdLines);
-            if (metas[7].contains("y"))
-                getPage(mdLines, metas);
-            else
-                getPost(mdLines, metas);
-        }
-        Collections.sort(posts, Collections.reverseOrder());
-        initializeDirectories();
-        Translator translator = new Translator(this);
-        String outputFile;
-        for (Post post:posts)
-        {
-            translator.setPostInfo(post);
-            outputFile = sitePath + File.separator +  post.getUrl();
-            generatHtml(translator, "generic", outputFile, null);
-            post.setMtime(Util.getNow());
-        }
-        for (Page page: pages)
-        {
-            translator.setPageInfo(page);
-            outputFile = sitePath + File.separator + page.getUrl();
-            generatHtml(translator, "generic", outputFile, null);
-            page.setMtime(Util.getNow());
-        }
-        generateCommonFiles();
-        saveSite();
-    }
-
     public void checkPostModification()
     {
         String[] draftList = FileIO.getFiles(sitePath + File.separator + DRAFT_PATH);
@@ -232,7 +165,6 @@ public class Site implements Serializable {
             postMap.remove(i);
             flag = 1;
         }
-
         if (flag == 1)      //signal some changes taken place.
         {
             generateCommonFiles();
@@ -246,42 +178,41 @@ public class Site implements Serializable {
         String archivePath = sitePath + File.separator + ARCHIVE_PATH;
         Translator translator = new Translator(this);
         String outputFile = archivePath + File.separator + "index.html";
-        generatHtml(translator, "archive", outputFile, null);
+        generateHtml(translator, "archive", outputFile, null);
         for (String cat: cats)
         {
             outputFile = archivePath + File.separator + cat + ".html";
-            generatHtml(translator, "archive", outputFile, cat);
+            generateHtml(translator, "archive", outputFile, cat);
         }
         outputFile = sitePath + File.separator + "index.html";
-        generatHtml(translator, "index", outputFile, null);
+        generateHtml(translator, "index", outputFile, null);
     }
 
-    private void initializeDirectories()
+    public String generateDraft(int type)
     {
-        String postPath = sitePath + File.separator + POST_PATH;
-        String archivePath = sitePath + File.separator + ARCHIVE_PATH;
-        String pagePath = sitePath + File.separator + PAGE_PATH;
-        String[] paths = { postPath, archivePath, pagePath};
-        for (String path: paths) {
-            if (FileIO.isDir(path))
-                FileIO.clearDir(path);
-            else
-                FileIO.mkDir(path);
+        String draftPath = sitePath + File.separator + DRAFT_PATH;
+        if (!FileIO.isDir(draftPath))
+            FileIO.mkDir(draftPath);
+        String newDraftContent = "---\n!Important: DO NOT modify the ID number! Lines with * are mandatory.";
+        String draftFile;
+        if (type == 0)
+        {   newDraftContent = newDraftContent + "Use ',' to split tags.\n*id: " + nextID
+                    + "\ntitle: \nauthor: Cheng\ncat: \ntags: \n*date: " + Util.getToday()
+                    + "\n*url: " + nextID + ".html\n---\n\n";
+            draftFile = draftPath + File.separator + nextID + ".md";
+            nextID++;
         }
+        else {
+            newDraftContent = newDraftContent + "\n*id:" + nextPageID + "\ntitle: \ndate: " + Util.getToday()
+                    + "\n*url: p" + nextPageID + ".html\n*type: page\n---\n\n";
+            draftFile = draftPath + File.separator + "p" + nextPageID + ".md";
+            nextPageID++;
+        }
+        FileIO.writeFile(draftFile, newDraftContent);
+        return draftFile;
     }
 
-    private void newPost(String draftFile)
-    {
-        LinkedList<StringBuilder> mdLines = FileIO.readMdFile(draftFile);
-        String[] metas = Convert.readMeta(mdLines);
-        Post post = getPost(mdLines, metas);
-        Translator ts = new Translator(this);
-        ts.setPostInfo(post);
-        String outputFile = sitePath + File.separator + post.getUrl();
-        generatHtml(ts, "generic", outputFile, null);
-    }
-
-    private void generatHtml(Translator ts, String template, String outputFile, String cat) //option cat is only used for category's archive page.
+    private void generateHtml(Translator ts, String template, String outputFile, String cat) //option cat is only used for category's archive page.
     {
         int op = (template.equals("index")) ? 1 : 0;
         if (cat != null)
@@ -290,6 +221,62 @@ public class Site implements Serializable {
         String templateText = FileIO.readFile(templateFile);
         String outputText = ts.tranlate(templateText, op, cat);
         FileIO.writeFile(outputFile, outputText);
+    }
+
+    public void generateWholeSite()
+    {
+        posts.clear();
+        cats.clear();
+        String jsonFile = getSitePath() + File.separator+ "themes" + File.separator + theme.getThemeName() + File.separator + "config.json";
+        theme.readFromJson(jsonFile);
+        String draftPath = sitePath + File.separator + DRAFT_PATH;
+        String[] draftList = FileIO.getFiles(draftPath);
+        for (String draftFile: draftList)
+        {
+            if (!draftFile.contains(".md"))
+                continue;
+            LinkedList<StringBuilder> mdLines = FileIO.readMdFile(draftPath + File.separator + draftFile);
+            String[] metas = Convert.readMeta(mdLines);
+            if (metas[7].contains("y"))
+                getPage(mdLines, metas);
+            else
+                getPost(mdLines, metas);
+        }
+        Collections.sort(posts, Collections.reverseOrder());
+        initializeDirectories();
+        Translator translator = new Translator(this);
+        String outputFile;
+        for (Post post:posts)
+        {
+            translator.setPostInfo(post);
+            outputFile = sitePath + File.separator +  post.getUrl();
+            generateHtml(translator, "generic", outputFile, null);
+            post.setMtime(Util.getNow());
+        }
+        for (Page page: pages)
+        {
+            translator.setPageInfo(page);
+            outputFile = sitePath + File.separator + page.getUrl();
+            generateHtml(translator, "generic", outputFile, null);
+            page.setMtime(Util.getNow());
+        }
+        generateCommonFiles();
+        saveSite();
+    }
+
+    private void getPage(LinkedList<StringBuilder> mdLines, String[] metas)
+    {
+        int pageID = Util.StrToInt(metas[0]);
+        if (pageID == -1)
+            return;
+        else if (pageID >= nextPageID)
+            nextPageID = pageID + 1;
+        Page page = new Page(pageID, metas[1], metas[4], PAGE_PATH + File.separator + metas[5], Util.getNow());
+        pages.add(page);
+        System.out.println("page add ok!");
+        Convert.dumpMeta(mdLines);
+        String pageContent = Convert.toHtml(mdLines);
+        page.setContent(pageContent);
     }
 
     private Post getPost(LinkedList<StringBuilder> mdLines, String[] metas)
@@ -310,41 +297,24 @@ public class Site implements Serializable {
             cats.add(metas[2]);
         Convert.dumpMeta(mdLines);
         String postContent = Convert.toHtml(mdLines);
-        String postBrief = Convert.getBrief(postContent, 256);
+        String postBrief = Convert.getBrief(postContent, theme.getBriefSize());
         post.setBrief(postBrief);
         post.setContent(postContent);
         return post;
     }
 
-    private void getPage(LinkedList<StringBuilder> mdLines, String[] metas)
+    private void initializeDirectories()
     {
-        int pageID = Util.StrToInt(metas[0]);
-        if (pageID == -1)
-            return;
-        else if (pageID >= nextPageID)
-            nextPageID = pageID + 1;
-        Page page = new Page(pageID, metas[1], metas[4], PAGE_PATH + File.separator + metas[5], Util.getNow());
-        pages.add(page);
-        System.out.println("page add ok!");
-        Convert.dumpMeta(mdLines);
-        String pageContent = Convert.toHtml(mdLines);
-        page.setContent(pageContent);
-    }
-
-    public void saveSite()
-    {
-        String dataFile = sitePath + File.separator + DATA_FILE;
-        try(FileOutputStream fos = new FileOutputStream(dataFile))
-        {
-            ObjectOutputStream out = new ObjectOutputStream(fos);
-            out.writeObject(this);
-            out.close();
+        String postPath = sitePath + File.separator + POST_PATH;
+        String archivePath = sitePath + File.separator + ARCHIVE_PATH;
+        String pagePath = sitePath + File.separator + PAGE_PATH;
+        String[] paths = { postPath, archivePath, pagePath};
+        for (String path: paths) {
+            if (FileIO.isDir(path))
+                FileIO.clearDir(path);
+            else
+                FileIO.mkDir(path);
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        System.out.println("Created data file successfully!");
     }
 
     public static Site loadSite(String dataFile)
@@ -368,4 +338,30 @@ public class Site implements Serializable {
         return s;
     }
 
+    private void newPost(String draftFile)
+    {
+        LinkedList<StringBuilder> mdLines = FileIO.readMdFile(draftFile);
+        String[] metas = Convert.readMeta(mdLines);
+        Post post = getPost(mdLines, metas);
+        Translator ts = new Translator(this);
+        ts.setPostInfo(post);
+        String outputFile = sitePath + File.separator + post.getUrl();
+        generateHtml(ts, "generic", outputFile, null);
+    }
+
+    public void saveSite()
+    {
+        String dataFile = sitePath + File.separator + DATA_FILE;
+        try(FileOutputStream fos = new FileOutputStream(dataFile))
+        {
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(this);
+            out.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println("Created data file successfully!");
+    }
 }

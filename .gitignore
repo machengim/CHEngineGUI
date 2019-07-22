@@ -4,3 +4,4 @@ Test*
 .idea/
 *.class
 *.ser
+__pycache__
