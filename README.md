@@ -21,3 +21,5 @@ The markdown features which can be used in this app include:
 + a single newline character at the end of a line represents `<br>`, while more than one, `<p>`.
 
 ---
+
+A python version without GUI has been added.

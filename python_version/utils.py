@@ -14,6 +14,12 @@ def check_child_url(url):
         return '../' + url
 
 
+def check_site_url(url):
+    if url.count('http') == 0:
+        return 'http://' + url
+    else:
+        return url
+
 def check_dir_exists(dirname):
     return os.path.isdir(dirname)
 
@@ -38,7 +44,7 @@ def get_brief(content, limit):
     if brief.count('<!') > 0:       #find <!--more--> tag.
         brief = brief[: brief.index('<!')]
     elif brief.count('<') > 0 and brief.rfind('<') > brief.rfind('>'):
-        print('cut at = ' + str(brief.rindex('<')))
+        brief = brief[: brief.rfind('<')]
     end_chars = ['.','!','?','。','！','？']       #english and chinese character
     if brief[-1] not in end_chars:
         brief += '...'
@@ -126,7 +132,7 @@ def translate(site_info, template_file, metas = {}, content = '', cat = ''):
         j = template.index('[$endfor$]', j)
         template = template.replace(template[i: j + 10], translate_loop(site_info, template[i: j + 10], flag_index, cat))
     template = template.replace('[$site_name$]', site_info['name'])
-    template = template.replace('[$site_url$]', site_info['url'])
+    template = template.replace('[$site_url$]', check_site_url(site_info['url']))
     if flag_index != 1:
         template = template.replace('[$theme_path$]',check_child_url(os.path.join('themes', site_info['theme_name'])))
     else:
