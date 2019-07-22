@@ -207,7 +207,7 @@ def new_draft(site_path, option):
     if option == 'post':
         draft_file = os.path.join(draft_path, str(site_info['next_post_id']) + '.md')
         draft_text = '---\n!Important: DO NOT modify the id number!\n' \
-                     '*id: ' + str(site_info['next_post_id']) + '\ntitle: \nauthor: \ndate: ' \
+                     'id: ' + str(site_info['next_post_id']) + '\ntitle: \nauthor: \ndate: ' \
                      + utils.get_today() + '\nurl: ' + str(site_info['next_post_id']) + '.html\n' \
                      + 'cat: \n---\n\n'         #cat is short for category
         site_info['next_post_id'] += 1
