@@ -149,6 +149,10 @@ def initialize_dirs(site_path):
     draft_path = os.path.join(site_path, 'draft')       #Do not clear draft directory!
     if not utils.check_dir_exists(draft_path):
         utils.make_dir(draft_path)
+    elif len(os.listdir(draft_path)) > 0:
+        clear_drafts = input('draft files exist! Do you want to clear them? (y/n) :')
+        if clear_drafts == 'y':
+            utils.clear_dir(draft_path)
     dir_names = ['posts', 'pages', 'archive']
     dir_paths = [os.path.join(site_path, dir_name) for dir_name in dir_names]
     for dir_path in dir_paths:
@@ -170,18 +174,21 @@ def process_draft(site_path, site_info, filename):  #full path filename
     text = utils.read_file(filename)
     metas, content = utils.split_md_content(text)
     content = markdown2.markdown(content)
+    if len(metas['title']) == 0:
+        metas['title'] = 'No Title'
+    metas['mtime'] = utils.get_now()
     if metas['is_page'] == 'y':
-        if len(metas['title']) == 0:
-            metas['title'] = 'No Title'
+        if int(metas['id']) > site_info['next_page_id']:
+            site_info['next_page_id'] = int(metas['id']) + 1
         if len(metas['url']) == 0:
             metas['url'] = 'p' + metas['id'] + '.html'
         metas['url'] = os.path.join('pages', metas['url'])
-        metas['mtime'] = utils.get_now()
+        
         generate_post(metas, content, site_path, site_info, 'page')
         site_info['pages'].append(metas)
     else:
-        if len(metas['title']) == 0:
-            metas['title'] = 'No Title'
+        if int(metas['id']) > site_info['next_post_id']:
+            site_info['next_post_id'] = int(metas['id']) + 1
         if len(metas['date']) == 0:
             metas['date'] = utils.get_today()
         if len(metas['url']) == 0:
@@ -189,7 +196,6 @@ def process_draft(site_path, site_info, filename):  #full path filename
         if len(metas['author']) == 0:
             metas['author'] = 'Cheng'
         metas['url'] = os.path.join('posts', metas['url'])
-        metas['mtime'] = utils.get_now()
         metas['brief'] = utils.get_brief(content, site_info['theme']['brief_size'])   #need to get theme limit
         site_info['posts'].append(metas)
         if len(metas['cat']) > 0 and metas['cat'] not in site_info['cat_names']:
