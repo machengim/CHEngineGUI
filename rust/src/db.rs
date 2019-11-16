@@ -10,7 +10,7 @@ pub fn execute(post: &Post, op: &str) {
 }
 
 pub fn get_post_list() -> HashMap<i32, String> {
-    let mut conn = Client::connect("postgres://postgres:830722@localhost:5432/mydb", NoTls)
+    let mut conn = Client::connect("postgres://postgres:xxxxxx@localhost:5432/mydb", NoTls)
                         .expect("conn error!");
     
     let sql = "SELECT id, mtime FROM post";
@@ -26,7 +26,7 @@ pub fn get_post_list() -> HashMap<i32, String> {
 }
 
 fn insert(post: &Post) {
-    let mut conn = Client::connect("postgres://postgres:830722@localhost:5432/mydb", NoTls)
+    let mut conn = Client::connect("postgres://postgres:xxxxxx@localhost:5432/mydb", NoTls)
                         .expect("conn error!");
 
     conn.execute("insert into post(id, title, mtime, url, cat, author, date, content)
