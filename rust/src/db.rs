@@ -1,17 +1,40 @@
+use std::fs;
+use serde_json::Value;
 use std::collections::HashMap;
 use postgres::{Client, NoTls};
-use crate::common::Post;
+use crate::common;
 
-pub fn execute(post: &Post, op: &str) {
+pub fn execute(post: &common::Post, op: &str) {
     match op {
         "insert" => insert(post),
         _ => (),
     }
 }
 
+pub fn get_conn() -> Client {
+    let filename = format!("{}/{}", common::DIR, "config.json");
+    let data = fs::read_to_string(filename)
+                    .expect("Read file error");
+    let v: Value = serde_json::from_str(&data)
+                .expect("Can't parse json data");
+    
+    let mut map: HashMap<String, String> = HashMap::new();
+    let metas = ["name", "username", "password", "address", "port"];
+    for meta in &metas {
+        let value = v["db"][meta].as_str().expect("");
+        map.insert(meta.to_string(), value.to_string());
+    }
+    
+    let db_str = format!("postgres://{}:{}@{}:{}/{}", map["username"],
+            map["password"], map["address"], map["port"], map["name"]);
+    let conn = Client::connect(&db_str, NoTls)
+        .expect("Db connection error");
+
+    conn
+}
+
 pub fn get_post_list() -> HashMap<i32, String> {
-    let mut conn = Client::connect("postgres://postgres:830722@localhost:5432/mydb", NoTls)
-                        .expect("conn error!");
+    let mut conn = get_conn();
     
     let sql = "SELECT id, mtime FROM post";
     let mut map: HashMap<i32, String> = HashMap::new();
@@ -25,9 +48,8 @@ pub fn get_post_list() -> HashMap<i32, String> {
     map
 }
 
-fn insert(post: &Post) {
-    let mut conn = Client::connect("postgres://postgres:830722@localhost:5432/mydb", NoTls)
-                        .expect("conn error!");
+fn insert(post: &common::Post) {
+    let mut conn = get_conn();
 
     conn.execute("insert into post(id, title, mtime, url, cat, author, date, content)
                 values($1, $2, $3, $4, $5, $6, $7, $8)",

@@ -1,4 +1,7 @@
-use chrono::prelude::*;
+use chrono::DateTime;
+use chrono::offset::Utc;
+
+pub const DIR: &str = "./assets";
 
 pub struct Post {
     pub id: i32,

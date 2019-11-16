@@ -1,14 +1,15 @@
 use std::fs;
+use std::path::Path;
 use std::collections::HashMap;
 use chrono::DateTime;
 use chrono::offset::Utc;
-use crate::db;
+use crate::{db, common, parser};
 
 fn read_folder() -> HashMap<i32, String> {
 
     let mut map: HashMap<i32, String> = HashMap::new();
 
-    for entry in fs::read_dir("./src")
+    for entry in fs::read_dir(common::DIR)
                     .expect("Directory reading error!") {
         let path = entry.unwrap().path();
         let path = path.to_str()
@@ -24,7 +25,49 @@ fn read_folder() -> HashMap<i32, String> {
     map
 }
 
-pub fn compare() {
+pub fn manage_site() {
+    let (insert, delete, update) = compare();
+    insert_post(&insert);
+    delete_post(&delete);
+    update_post(&update);
+}
+
+fn insert_post(v: & Vec<i32>) {
+    for id in v {
+        let post = get_post(id);
+        db::execute(&post, "insert");
+    }
+}
+
+fn delete_post(v: & Vec<i32>) {
+    for id in v {
+        // TODO;
+    }
+}
+
+fn update_post(v: & Vec<i32>) {
+    for id in v {
+        let post = get_post(id);
+        db::execute(&post, "update");   //TODO;
+    }
+}
+
+fn get_post(id: &i32) -> common::Post {
+    let filename = format!("{}/{}.md", common::DIR, id.to_string());
+    if !Path::new(&filename).is_file() {
+        panic!("File not found!"); 
+    }
+
+    let text = fs::read_to_string(&filename).expect("Read md file error!");
+    let post = parser::parse_md(&text);
+    if &post.id != id {
+        panic!("Id inconsistency!");
+    }
+
+    post
+}
+
+fn compare() -> (Vec<i32>, Vec<i32>, Vec<i32>) {
     let md_metas = read_folder();
     let db_metas = db::get_post_list();
     let mut md_keys: Vec<i32> = md_metas.keys().cloned().collect();
@@ -52,6 +95,17 @@ pub fn compare() {
         }
     }
 
+    while i < md_keys.len() {
+        l1.push(md_keys[i]);
+        i += 1;
+    }
+
+    while j < db_keys.len() {
+        l2.push(db_keys[j]);
+        j += 1;
+    }
+
+    (l1, l2, l3)
 }
 
 fn get_md_mtime(file: &str) -> String {
