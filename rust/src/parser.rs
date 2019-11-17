@@ -13,6 +13,10 @@ pub fn parse_md(text: &str) -> Post {
     post
 }
 
+fn find_after(s: &str, at: usize, pat: &str) -> Option<usize> {
+    s[at..].find(pat).map(|i| at + i)
+}
+
 fn parse_head(head: &str, post: &mut Post) {
     let metas = ["id", "title", "date", "url", "cat", "author"];
 
@@ -44,8 +48,4 @@ fn parse_head(head: &str, post: &mut Post) {
 fn parse_body(body: &str, post: &mut Post) {
     let content = markdown_to_html(body, &ComrakOptions::default());
     post.content = content.trim().to_string();
-}
-
-fn find_after(s: &str, at: usize, pat: &str) -> Option<usize> {
-    s[at..].find(pat).map(|i| at + i)
 }

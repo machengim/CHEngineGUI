@@ -5,66 +5,14 @@ use chrono::DateTime;
 use chrono::offset::Utc;
 use crate::{db, common, parser};
 
-fn read_folder() -> HashMap<i32, String> {
-
-    let mut map: HashMap<i32, String> = HashMap::new();
-
-    for entry in fs::read_dir(common::DIR)
-                    .expect("Directory reading error!") {
-        let path = entry.unwrap().path();
-        let path = path.to_str()
-                    .expect("Can't convert path to str");
-
-        if path.ends_with(".md") {
-            let mtime = get_md_mtime(path);
-            let id = get_md_id(path);
-            map.insert(id, mtime);
-        }
-    }
-
-    map
-}
-
 pub fn manage_site() {
     let (insert, delete, update) = compare();
+    println!("insert: {:?}", &insert);
+    println!("delete: {:?}", &delete);
+    println!("update: {:?}", &update);
     insert_post(&insert);
     delete_post(&delete);
     update_post(&update);
-}
-
-fn insert_post(v: & Vec<i32>) {
-    for id in v {
-        let post = get_post(id);
-        db::execute(&post, "insert");
-    }
-}
-
-fn delete_post(v: & Vec<i32>) {
-    for id in v {
-        // TODO;
-    }
-}
-
-fn update_post(v: & Vec<i32>) {
-    for id in v {
-        let post = get_post(id);
-        db::execute(&post, "update");   //TODO;
-    }
-}
-
-fn get_post(id: &i32) -> common::Post {
-    let filename = format!("{}/{}.md", common::DIR, id.to_string());
-    if !Path::new(&filename).is_file() {
-        panic!("File not found!"); 
-    }
-
-    let text = fs::read_to_string(&filename).expect("Read md file error!");
-    let post = parser::parse_md(&text);
-    if &post.id != id {
-        panic!("Id inconsistency!");
-    }
-
-    post
 }
 
 fn compare() -> (Vec<i32>, Vec<i32>, Vec<i32>) {
@@ -108,6 +56,27 @@ fn compare() -> (Vec<i32>, Vec<i32>, Vec<i32>) {
     (l1, l2, l3)
 }
 
+fn delete_post(v: & Vec<i32>) {
+    for id in v {
+        db::delete(*id);
+    }
+}
+
+fn get_post_from_md(id: &i32) -> common::Post {
+    let filename = format!("{}/{}.md", common::DIR, id.to_string());
+    if !Path::new(&filename).is_file() {
+        panic!("File not found!"); 
+    }
+
+    let text = fs::read_to_string(&filename).expect("Read md file error!");
+    let post = parser::parse_md(&text);
+    if &post.id != id {
+        panic!("Id inconsistency!");
+    }
+
+    post
+}
+
 fn get_md_mtime(file: &str) -> String {
     let metadata = fs::metadata(file)
                     .expect("Can't read metadata of file");
@@ -131,4 +100,41 @@ fn get_md_id(file: &str) -> i32 {
                     .expect("Parse filename to id error");
     
     id
+}
+
+fn insert_post(v: & Vec<i32>) {
+    for id in v {
+        let post = get_post_from_md(id);
+        db::execute(&post, "insert");
+    }
+}
+
+fn read_folder() -> HashMap<i32, String> {
+
+    let mut map: HashMap<i32, String> = HashMap::new();
+
+    for entry in fs::read_dir(common::DIR)
+                    .expect("Directory reading error!") {
+        let path = entry.unwrap().path();
+        let path = path.to_str()
+                    .expect("Can't convert path to str");
+
+        if path.ends_with(".md") {
+            let mtime = get_md_mtime(path);
+            let id = get_md_id(path);
+            map.insert(id, mtime);
+        }
+    }
+
+    map
+}
+
+fn update_post(v: & Vec<i32>) {
+    for id in v {
+        let mut post = get_post_from_md(id);
+        let utc: DateTime<Utc> = Utc::now();
+        let time = utc.format("%Y%m%d%H%M%S").to_string();
+        post.mtime = time;
+        db::execute(&post, "update");
+    }
 }

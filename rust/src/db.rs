@@ -4,9 +4,17 @@ use std::collections::HashMap;
 use postgres::{Client, NoTls};
 use crate::common;
 
+pub fn delete(id: i32) {
+    let mut conn = get_conn();
+
+    conn.execute("delete from post where id = $1", &[&id])
+                .expect("Delete error");
+}
+
 pub fn execute(post: &common::Post, op: &str) {
     match op {
         "insert" => insert(post),
+        "update" => update(post),
         _ => (),
     }
 }
@@ -55,4 +63,15 @@ fn insert(post: &common::Post) {
                 values($1, $2, $3, $4, $5, $6, $7, $8)",
                 &[&post.id, &post.title, &post.mtime, &post.url, &post.cat, &post.author, &post.date, &post.content])
                 .expect("insert error");
+}
+
+fn update(post: &common::Post) {
+    let mut conn = get_conn();
+    let id = post.id;
+
+    conn.execute("update post set (title, mtime, url, cat, author, date, content)
+                 = ($1, $2, $3, $4, $5, $6,$7 ) where id = $8",
+                 &[&post.title, &post.mtime, &post.url, &post.cat, &post.author, &post.date, &post.content, &id])
+                 .expect("update error");
+
 }
